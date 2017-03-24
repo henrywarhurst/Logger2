@@ -37,6 +37,7 @@
 #include <boost/thread/condition_variable.hpp>
 
 #include "OpenNI2/OpenNI2Interface.h"
+#include "OpenNI2/RealSenseInterface.h"
 #include "MemoryBuffer.h"
 #include "TcpHandler.h"
 #endif
@@ -50,10 +51,17 @@ class Logger2
         void startWriting(std::string filename);
         void stopWriting(QWidget * parent);
 
+#ifdef WITH_REALSENSE
+	RealSenseInterface * getOpenNI2Interface()
+	{
+	    return openNI2Interface;
+	}
+#else
         OpenNI2Interface * getOpenNI2Interface()
         {
             return openNI2Interface;
         }
+#endif
 
         MemoryBuffer & getMemoryBuffer()
         {
@@ -77,7 +85,12 @@ class Logger2
         ThreadMutexObject<std::pair<bool, int64_t> > dropping;
 
     private:
+#ifdef WITH_REALSENSE
+	RealSenseInterface * openNI2Interface;
+#else
         OpenNI2Interface * openNI2Interface;
+#endif
+
         MemoryBuffer memoryBuffer;
 
         int depth_compress_buf_size;
