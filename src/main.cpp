@@ -1,5 +1,14 @@
 #include "main.h"
 
+#include <iostream>
+#include <signal.h>
+#include <unistd.h>
+#include <cstring>
+#include <atomic>
+
+// Signal flag
+std::atomic<bool> sigintQuit(false);
+
 int find_argument(int argc, char** argv, const char* argument_name)
 {
     for(int i = 1; i < argc; ++i)
@@ -24,8 +33,19 @@ int parse_argument(int argc, char** argv, const char* str, int &val)
     return (index - 1);
 }
 
+void got_signal(int)
+{
+    sigintQuit.store(true);
+}
+
 int main(int argc, char **argv)
 {
+    struct sigaction sa;
+    memset( &sa, 0, sizeof(sa) );
+    sa.sa_handler = got_signal;
+    sigfillset(&sa.sa_mask);
+    sigaction(SIGINT, &sa, NULL);
+
     QApplication app(argc, argv);
 
     int width = 640;
@@ -185,6 +205,7 @@ MainWindow::MainWindow(int width, int height, int fps, bool tcp)
 
 MainWindow::~MainWindow()
 {
+    std::cout << "Yay, the main descructor was called" << std::endl;
     timer->stop();
     delete logger;
 }
@@ -348,6 +369,11 @@ void MainWindow::quit()
 
 void MainWindow::timerCallback()
 {
+    if ( sigintQuit.load() ) {
+        std::cout << "Yay, we ran some code when SIGINT was called!" << std::endl;
+	this->close();
+    }
+
     int64_t usedMemory = MemoryBuffer::getUsedSystemMemory();
     int64_t totalMemory = MemoryBuffer::getTotalSystemMemory();
     int64_t processMemory = MemoryBuffer::getProcessMemory();
