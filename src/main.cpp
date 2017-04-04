@@ -115,27 +115,8 @@ MainWindow::MainWindow(int width, int height, int fps, bool tcp)
     int cushion = 10;
 #endif
 
-    browseButton = new QPushButton("Browse", this);
-    browseButton->setMaximumWidth(browseButton->fontMetrics().boundingRect(browseButton->text()).width() + cushion);
-    connect(browseButton, SIGNAL(clicked()), this, SLOT(fileBrowse()));
-    fileLayout->addWidget(browseButton);
-
-    dateNameButton = new QPushButton("Date filename", this);
-    dateNameButton->setMaximumWidth(dateNameButton->fontMetrics().boundingRect(dateNameButton->text()).width() + cushion);
-    connect(dateNameButton, SIGNAL(clicked()), this, SLOT(dateFilename()));
-    fileLayout->addWidget(dateNameButton);
-
-    autoExposure = new QCheckBox("Auto Exposure");
-    autoExposure->setChecked(false);
-
-    autoWhiteBalance = new QCheckBox("Auto White Balance");
-    autoWhiteBalance->setChecked(false);
-
     compressed = new QCheckBox("Compressed");
     compressed->setChecked(true);
-
-    memoryRecord = new QCheckBox("Record to RAM");
-    memoryRecord->setChecked(false);
 
     memoryStatus = new QLabel("");
 
@@ -205,7 +186,6 @@ MainWindow::MainWindow(int width, int height, int fps, bool tcp)
 
 MainWindow::~MainWindow()
 {
-    std::cout << "Yay, the main descructor was called" << std::endl;
     timer->stop();
     delete logger;
 }
@@ -371,7 +351,7 @@ void MainWindow::timerCallback()
 {
     if ( sigintQuit.load() ) {
         std::cout << "Yay, we ran some code when SIGINT was called!" << std::endl;
-	this->close();
+	quit();
     }
 
     int64_t usedMemory = MemoryBuffer::getUsedSystemMemory();
