@@ -120,15 +120,9 @@ MainWindow::MainWindow(int width, int height, int fps, bool tcp)
 
     memoryStatus = new QLabel("");
 
-    connect(autoExposure, SIGNAL(stateChanged(int)), this, SLOT(setExposure()));
-    connect(autoWhiteBalance, SIGNAL(stateChanged(int)), this, SLOT(setWhiteBalance()));
     connect(compressed, SIGNAL(released()), this, SLOT(setCompressed()));
-    connect(memoryRecord, SIGNAL(stateChanged(int)), this, SLOT(setMemoryRecord()));
 
-    optionLayout->addWidget(autoExposure);
-    optionLayout->addWidget(autoWhiteBalance);
     optionLayout->addWidget(compressed);
-    optionLayout->addWidget(memoryRecord);
     optionLayout->addWidget(memoryStatus);
 
     wrapperLayout->addLayout(buttonLayout);
@@ -237,40 +231,6 @@ std::string MainWindow::getNextFilename()
     return "";
 }
 
-void MainWindow::dateFilename()
-{
-    lastFilename.clear();
-    logFile->setText(QString::fromStdString(getNextFilename()));
-}
-
-void MainWindow::fileBrowse()
-{
-    QString message = "Log file selection";
-
-    QString types = "All files (*)";
-
-    QString fileName = QFileDialog::getSaveFileName(this, message, ".", types);
-
-    if(!fileName.isEmpty())
-    {
-        if(!fileName.contains(".klg", Qt::CaseInsensitive))
-        {
-            fileName.append(".klg");
-        }
-
-#ifndef OS_WINDOWS
-        logFolder = fileName.toStdString().substr(0, fileName.toStdString().rfind("/"));
-        lastFilename = fileName.toStdString().substr(fileName.toStdString().rfind("/") + 1, fileName.toStdString().rfind(".klg"));
-#else
-        logFolder = fileName.toStdString().substr(0, fileName.toStdString().rfind("\\"));
-        lastFilename = fileName.toStdString().substr(fileName.toStdString().rfind("\\") + 1, fileName.toStdString().rfind(".klg"));
-#endif
-
-        lastFilename = lastFilename.substr(0, lastFilename.size() - 4);
-
-        logFile->setText(QString::fromStdString(getNextFilename()));
-    }
-}
 
 void MainWindow::recordToggle()
 {
@@ -282,7 +242,6 @@ void MainWindow::recordToggle()
         }
         else
         {
-            memoryRecord->setEnabled(false);
             compressed->setEnabled(false);
             logger->startWriting(logFile->text().toStdString());
             startStop->setText("Stop");
@@ -292,7 +251,6 @@ void MainWindow::recordToggle()
     else
     {
         logger->stopWriting(this);
-        memoryRecord->setEnabled(true);
         compressed->setEnabled(true);
         startStop->setText(tcp ? "Stream && Record" : "Record");
         recording = false;
@@ -300,15 +258,6 @@ void MainWindow::recordToggle()
     }
 }
 
-void MainWindow::setExposure()
-{
-    logger->getOpenNI2Interface()->setAutoExposure(autoExposure->isChecked());
-}
-
-void MainWindow::setWhiteBalance()
-{
-    logger->getOpenNI2Interface()->setAutoWhiteBalance(autoWhiteBalance->isChecked());
-}
 
 void MainWindow::setCompressed()
 {
@@ -330,10 +279,6 @@ void MainWindow::setCompressed()
     }
 }
 
-void MainWindow::setMemoryRecord()
-{
-    logger->setMemoryRecord(memoryRecord->isChecked());
-}
 
 void MainWindow::quit()
 {
@@ -351,6 +296,7 @@ void MainWindow::timerCallback()
 {
     if ( sigintQuit.load() ) {
         std::cout << "Yay, we ran some code when SIGINT was called!" << std::endl;
+	recordToggle();
 	quit();
     }
 
@@ -526,4 +472,9 @@ void MainWindow::timerCallback()
         msgBox.setText(QString::fromStdString(strs.str()));
         msgBox.exec();
     }
+
+    if (!recording) {
+    	recordToggle(); 
+    }
 }
+

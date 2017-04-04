@@ -59,12 +59,7 @@ class MainWindow : public QWidget
         void timerCallback();
         void recordToggle();
         void quit();
-        void fileBrowse();
-        void dateFilename();
-        void setExposure();
-        void setWhiteBalance();
         void setCompressed();
-        void setMemoryRecord();
 
     private:
         Logger2 * logger;
@@ -72,12 +67,7 @@ class MainWindow : public QWidget
         QImage rgbImage;
         bool recording;
         QPushButton * startStop;
-        QPushButton * browseButton;
-        QPushButton * dateNameButton;
-        QCheckBox * autoExposure;
-        QCheckBox * autoWhiteBalance;
         QCheckBox * compressed;
-        QCheckBox * memoryRecord;
         QLabel * logFile;
         unsigned short depthBuffer[640 * 480 * 2];
         QLabel * depthLabel;
