@@ -251,6 +251,7 @@ void MainWindow::recordToggle()
     else
     {
         logger->stopWriting(this);
+	std::cout << "Stopped writing file!" << std::endl; 
         compressed->setEnabled(true);
         startStop->setText(tcp ? "Stream && Record" : "Record");
         recording = false;
