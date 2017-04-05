@@ -15,7 +15,17 @@ def startRecording():
     return myproc
 
 def stopRecording(myproc):
-    os.killpg(os.getpgid(myproc.pid), signal.SIGINT)
+    myproc.send_signal(signal.SIGINT)
+    #os.killpg(os.getpgid(myproc.pid), signal.SIGINT)
+
+def scpFileToBlueisland():
+    # Authentication happens using ssh keys
+    myproc = subprocess.Popen(['scp', '/home/henry/Kinect_Logs/2017-04-05.00.klg',
+                               'henry@172.17.34.17:~/poll_kinect_log_folder'])
+    print 'Copying the file...'
+    # Wait til the scp is finished
+    myproc.wait()
+    print 'Done copying the file.'
 
 # Falling edge will happen the instant the button is pressed
 GPIO.wait_for_edge(24, GPIO.RISING)
@@ -24,6 +34,8 @@ myproc = startRecording()
 time.sleep(2)
 GPIO.wait_for_edge(24, GPIO.RISING)
 stopRecording(myproc)
+time.sleep(2)
+scpFileToBlueisland()
 
 GPIO.cleanup()
 

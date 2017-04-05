@@ -283,22 +283,19 @@ void MainWindow::setCompressed()
 
 void MainWindow::quit()
 {
-    if(QMessageBox::question(this, "Quit?", "Are you sure you want to quit?", "&No", "&Yes", QString::null, 0, 1 ))
+    if(recording)
     {
-        if(recording)
-        {
-            recordToggle();
-        }
-        this->close();
+        recordToggle();
     }
+    this->close();
 }
 
 void MainWindow::timerCallback()
 {
     if ( sigintQuit.load() ) {
         std::cout << "Yay, we ran some code when SIGINT was called!" << std::endl;
-	recordToggle();
 	quit();
+	return;
     }
 
     int64_t usedMemory = MemoryBuffer::getUsedSystemMemory();
