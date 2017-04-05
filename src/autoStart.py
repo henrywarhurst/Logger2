@@ -11,7 +11,7 @@ GPIO.setmode(GPIO.BCM)
 GPIO.setup(24, GPIO.IN)
 
 def startRecording():
-    myproc = subprocess.Popen('./Logger2', shell=False)
+    myproc = subprocess.Popen('../build/Logger2', shell=False, cwd='../build')
     return myproc
 
 def stopRecording(myproc):
@@ -20,6 +20,7 @@ def stopRecording(myproc):
 # Falling edge will happen the instant the button is pressed
 GPIO.wait_for_edge(24, GPIO.RISING)
 myproc = startRecording()
+# So we don't trigger a stop at the same time
 time.sleep(2)
 GPIO.wait_for_edge(24, GPIO.RISING)
 stopRecording(myproc)
