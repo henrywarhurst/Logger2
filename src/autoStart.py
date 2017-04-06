@@ -20,7 +20,7 @@ def stopRecording(myproc):
 
 def scpFileToBlueisland():
     # Authentication happens using ssh keys
-    myproc = subprocess.Popen(['scp', '/home/henry/Kinect_Logs/2017-04-05.00.klg',
+    myproc = subprocess.Popen(['scp', '-i', '/home/henry/.ssh/id_rsa','/home/henry/Kinect_Logs/2017-04-05.00.klg',
                                'henry@172.17.34.17:~/poll_kinect_log_folder'])
     print 'Copying the file...'
     # Wait til the scp is finished
