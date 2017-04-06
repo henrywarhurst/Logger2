@@ -186,7 +186,7 @@ MainWindow::~MainWindow()
 
 std::string MainWindow::getNextFilename()
 {
-    return "rs.klg";
+    return "/home/henry/Kinect_Logs/rs.klg";
 }
 
 
