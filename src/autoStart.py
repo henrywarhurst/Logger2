@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import subprocess
 import os
 import signal
@@ -9,6 +10,9 @@ GPIO.setmode(GPIO.BCM)
 
 # Don't forget to use a pull-up resistor 
 GPIO.setup(24, GPIO.IN)
+# For the 'this script is running' LED
+GPIO.setup(23, GPIO.OUT)
+GPIO.output(23, GPIO.HIGH)
 
 def startRecording():
     myproc = subprocess.Popen('../build/Logger2', shell=False, cwd='../build')
@@ -27,15 +31,16 @@ def scpFileToBlueisland():
     myproc.wait()
     print 'Done copying the file.'
 
-# Falling edge will happen the instant the button is pressed
-GPIO.wait_for_edge(24, GPIO.RISING)
-myproc = startRecording()
-# So we don't trigger a stop at the same time
-time.sleep(2)
-GPIO.wait_for_edge(24, GPIO.RISING)
-stopRecording(myproc)
-time.sleep(2)
-scpFileToBlueisland()
+while True: 
+    # Falling edge will happen the instant the button is pressed
+    GPIO.wait_for_edge(24, GPIO.RISING)
+    myproc = startRecording()
+    # So we don't trigger a stop at the same time
+    time.sleep(2)
+    GPIO.wait_for_edge(24, GPIO.RISING)
+    stopRecording(myproc)
+    time.sleep(2)
+    scpFileToBlueisland()
 
 GPIO.cleanup()
 
