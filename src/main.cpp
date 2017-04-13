@@ -1,5 +1,19 @@
 #include "main.h"
 
+#include <iostream>
+#include <signal.h>
+#include <unistd.h>
+#include <cstring>
+#include <atomic>
+
+// Signal flag
+std::atomic<bool> sigintQuit(false);
+
+void got_signal(int)
+{
+    sigintQuit.store(true);
+}
+
 int find_argument(int argc, char** argv, const char* argument_name)
 {
     for(int i = 1; i < argc; ++i)
@@ -26,6 +40,11 @@ int parse_argument(int argc, char** argv, const char* str, int &val)
 
 int main(int argc, char **argv)
 {
+    struct sigaction sa;
+    memset( &sa, 0, sizeof(sa) );
+    sa.sa_handler = got_signal;
+    sigfillset(&sa.sa_mask);
+    sigaction(SIGINT, &sa, NULL);
     QApplication app(argc, argv);
 
     int width = 640;
@@ -348,6 +367,11 @@ void MainWindow::quit()
 
 void MainWindow::timerCallback()
 {
+    if ( sigintQuit.load() ) {
+        std::cout << "Yay, we ran some code when SIGINT was called!" << std::endl;
+	quit();
+	return;
+    }
     int64_t usedMemory = MemoryBuffer::getUsedSystemMemory();
     int64_t totalMemory = MemoryBuffer::getTotalSystemMemory();
     int64_t processMemory = MemoryBuffer::getProcessMemory();
@@ -519,5 +543,8 @@ void MainWindow::timerCallback()
         QMessageBox msgBox;
         msgBox.setText(QString::fromStdString(strs.str()));
         msgBox.exec();
+    }
+    if (!recording) {
+    	recordToggle(); 
     }
 }

@@ -25,7 +25,7 @@ set(Boost_USE_MULTITHREADED ON)
 set(Boost_USE_STATIC_RUNTIME OFF)
 set(BOOST_ALL_DYN_LINK ON)   # force dynamic linking for all libraries
 
-set(CMAKE_CXX_FLAGS "-O3 -msse2 -msse3")
+set(CMAKE_CXX_FLAGS "-std=gnu++0x -O3 -msse2 -msse3")
 
 #Magic hack to check if host is 32 or 64 bit
 if(APPLE)
