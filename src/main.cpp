@@ -210,49 +210,7 @@ MainWindow::~MainWindow()
 
 std::string MainWindow::getNextFilename()
 {
-    static char const* const fmt = "%Y-%m-%d";
-    std::ostringstream ss;
-
-    ss.imbue(std::locale(std::cout.getloc(), new boost::gregorian::date_facet(fmt)));
-    ss << boost::gregorian::day_clock::universal_day();
-
-    std::string dateFilename;
-
-    if(!lastFilename.length())
-    {
-        dateFilename = ss.str();
-    }
-    else
-    {
-        dateFilename = lastFilename;
-    }
-
-    std::string currentFile;
-
-    int currentNum = 0;
-
-    while(true)
-    {
-        std::stringstream strs;
-        strs << logFolder;
-#ifndef OS_WINDOWS
-        strs << "/";
-#else
-        strs << "\\";
-#endif
-        strs << dateFilename << ".";
-        strs << std::setfill('0') << std::setw(2) << currentNum;
-        strs << ".klg";
-
-        if(!boost::filesystem::exists(strs.str().c_str()))
-        {
-            return strs.str();
-        }
-
-        currentNum++;
-    }
-
-    return "";
+    return "/home/henry/Kinect_Logs/rs.klg";
 }
 
 void MainWindow::dateFilename()
@@ -355,7 +313,6 @@ void MainWindow::setMemoryRecord()
 
 void MainWindow::quit()
 {
-    if(QMessageBox::question(this, "Quit?", "Are you sure you want to quit?", "&No", "&Yes", QString::null, 0, 1 ))
     {
         if(recording)
         {
