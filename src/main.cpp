@@ -544,7 +544,9 @@ void MainWindow::timerCallback()
         msgBox.setText(QString::fromStdString(strs.str()));
         msgBox.exec();
     }
+
     if (!recording) {
-    	recordToggle(); 
+        std::cout << "Recording started" << std::endl;
+        recordToggle();
     }
 }
